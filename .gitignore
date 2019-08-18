@@ -33,7 +33,7 @@ Temporary Items
 ### Python ###
 
 # ignore virtual environment
-test-web-scraping/*
+python_testing/test-web-scraping/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
