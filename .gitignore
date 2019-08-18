@@ -31,6 +31,10 @@ Temporary Items
 .apdisk
 
 ### Python ###
+
+# ignore virtual environment
+test-web-scraping/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
