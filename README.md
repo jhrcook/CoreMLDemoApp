@@ -7,17 +7,57 @@
 
 This is a demonstration of using CoreML to recognize succulents from images. It is still very much in it's early stages.
 
+**Overview**
+
+1. Create an R script that scrapes the plant names from [World of Succulents](https://worldofsucculents.com/browse-succulents-scientific-name).
+2. Create a shell script that uses [Google Images Download](https://github.com/hardikvasa/google-images-download) to download the images to a directory called "data/" and each plant has a subdirectory.
+3. Use TransorFlow to retrain an image classifier with my new data set.
+4. Use the `core-ml` python package to convert the TensorFlow model into one that can be imported into Xcode for CoreML
+
+
 ## Data
 
 I scraped plant names from [World of Succulents](https://worldofsucculents.com/browse-succulents-scientific-name) using 'rvest' to retrieve and parse the HTML. The code is in "webscrape.r" and outputs a list of names to "plant_names.txt". Then, "test_download_plants.py" downloads the first N images from a Google Images search using the [Google Images Download](https://github.com/hardikvasa/google-images-download) python library.
 
-**TODO:** change the output from the R script to a JSON with the format as shown [here](https://google-images-download.readthedocs.io/en/latest/examples.html). Then just use the command line form of Google Images Download (don't forget to activate and deactivate the virtual enviorment).
+**TODO:** Change the output from the R script to a JSON with the format as shown [here](https://google-images-download.readthedocs.io/en/latest/examples.html). Then just use the command line form of Google Images Download (don't forget to activate and deactivate the virtual enviorment).
 
 ```bash
 source test-web-scraping/bin/activate
 ...
 deactivate
 ```
+
+
+
+
+### Preparing Python virtual environment
+
+Working on the O2 cluster
+
+```bash
+module load python/3.6.0
+python3 -m venv image-download
+```
+
+There should now be a directory called "image-download".
+
+Activate the new virtual environment and install the [Google Images Download](https://github.com/hardikvasa/google-images-download) python library. (You may want to upgrade `pip3` with the following command `pip3 install --upgrade pip`.)
+
+```bash
+source image-download/bin/activate
+pip3 install google_images_download
+```
+
+### Script to download images for plants
+
+The "download_google_images.sh" script simply runs the CLI for `google_images_download` and points to the JSON made in the R script.
+
+```bash
+source image-download/bin/activate
+googleimagesdownload -cf download_plant_images.json
+deactivate
+```
+
 
 ## ML Model Creation
 
