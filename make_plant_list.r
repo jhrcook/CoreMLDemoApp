@@ -22,13 +22,19 @@ get_plant_names <- function(lnk) {
 
 plant_names <- unlist(map(link_data, get_plant_names))
 cat(plant_names, sep = "\n", file = "plant_names.txt")
-cat(plant_names[1:5], sep = "\n", file = "plant_names_5.txt")
+
+
+TEST_PLANTS <- c(
+    "Frailea castanea",
+    "Titanopsis calcarea",
+    "Euphorbia obesa",
+    "Echeveria purpusorum",
+    "Haworthia pygmaea"
+)
 
 
 # save as JSON
-
-plant_tib <- tibble(keywords = plant_names, limit = 5) %>%
-    slice(1:3)
+plant_tib <- tibble(keywords = TEST_PLANTS, limit = 200)
 records_tib <- tibble(Records = list(plant_tib))
 jsonlite::write_json(flatten(records_tib),
                      path = "download_plant_images.json",
