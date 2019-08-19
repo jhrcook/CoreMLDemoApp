@@ -27,8 +27,13 @@ source test-web-scraping/bin/activate
 deactivate
 ```
 
+### Preparing JSON file for doanloading
 
+The Rscript "make_plant_list.r" parses the plant names into "plant_names.txt" and "download_plant_images.json". The maximum number of images I can download without Chrome installed is 100. Therefore, to keep everything on the O2 cluster, I will stick to that limit for the testing phase of this demonstration. Only 5 test plants are being used right now, chosen on the basis that I have unique images of these species (i.e. I own them).
 
+```bash
+Rscript make_plant_list.r
+```
 
 ### Preparing Python virtual environment
 
@@ -54,8 +59,14 @@ The "download_google_images.sh" script simply runs the CLI for `google_images_do
 
 ```bash
 source image-download/bin/activate
-googleimagesdownload -cf download_plant_images.json
+googleimagesdownload --config_file download_plant_images.json
 deactivate
+```
+
+To run the download script.
+
+```bash
+source download_google_images.sh
 ```
 
 
