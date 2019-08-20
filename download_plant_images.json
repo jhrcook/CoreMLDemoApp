@@ -2,28 +2,23 @@
   "Records": [
     {
       "keywords": "Frailea castanea",
-      "limit": 200,
-      "offset": 100
+      "limit": 100
     },
     {
       "keywords": "Titanopsis calcarea",
-      "limit": 200,
-      "offset": 100
+      "limit": 100
     },
     {
       "keywords": "Euphorbia obesa",
-      "limit": 200,
-      "offset": 100
+      "limit": 100
     },
     {
       "keywords": "Echeveria purpusorum",
-      "limit": 200,
-      "offset": 100
+      "limit": 100
     },
     {
       "keywords": "Haworthia pygmaea",
-      "limit": 200,
-      "offset": 100
+      "limit": 100
     }
   ]
 }

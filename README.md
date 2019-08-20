@@ -17,19 +17,11 @@ This is a demonstration of using CoreML to recognize succulents from images. It 
 
 ## Data
 
-I scraped plant names from [World of Succulents](https://worldofsucculents.com/browse-succulents-scientific-name) using 'rvest' to retrieve and parse the HTML. The code is in "webscrape.r" and outputs a list of names to "plant_names.txt". Then, "test_download_plants.py" downloads the first N images from a Google Images search using the [Google Images Download](https://github.com/hardikvasa/google-images-download) python library.
-
-**TODO:** Change the output from the R script to a JSON with the format as shown [here](https://google-images-download.readthedocs.io/en/latest/examples.html). Then just use the command line form of Google Images Download (don't forget to activate and deactivate the virtual enviorment).
-
-```bash
-source test-web-scraping/bin/activate
-...
-deactivate
-```
+I scraped plant names from [World of Succulents](https://worldofsucculents.com/browse-succulents-scientific-name) using '[rvest](https://cran.r-project.org/web/packages/rvest/index.html)' to retrieve and parse the HTML. The code is in "make\_plant\_list.r" and outputs a list of names to "plant_names.txt" and a JSON called "download\_plant\_images.json". Then, "download\_google\_images.sh" downloads the first 100 images from a Google Images search using the [Google Images Download](https://github.com/hardikvasa/google-images-download) python library.
 
 ### Preparing JSON file for doanloading
 
-The Rscript "make_plant_list.r" parses the plant names into "plant_names.txt" and "download_plant_images.json". The maximum number of images I can download without Chrome installed is 100. Therefore, to keep everything on the O2 cluster, I will stick to that limit for the testing phase of this demonstration. Only 5 test plants are being used right now, chosen on the basis that I have unique images of these species (i.e. I own them).
+The Rscript "make\_plant\_list.r" parses the plant names into "plant\_names.txt" and "download_plant_images.json". The maximum number of images I can download without Chrome installed is 100. Therefore, to keep everything on the O2 cluster, I will stick to that limit for the testing phase of this demonstration. Only 5 test plants are being used right now, chosen on the basis that I have unique images of these species (i.e. I own them).
 
 ```bash
 Rscript make_plant_list.r
@@ -48,6 +40,7 @@ There should now be a directory called "image-download".
 
 Activate the new virtual environment and install the [Google Images Download](https://github.com/hardikvasa/google-images-download) python library. (You may want to upgrade `pip3` with the following command `pip3 install --upgrade pip`.)
 
+
 ```bash
 source image-download/bin/activate
 pip3 install google_images_download
@@ -55,7 +48,7 @@ pip3 install google_images_download
 
 ### Script to download images for plants
 
-The "download_google_images.sh" script simply runs the CLI for `google_images_download` and points to the JSON made in the R script.
+The "download_google_images.sh" script simply runs the CLI for `google\_images\_download` and points to the JSON made in the R script.
 
 ```bash
 source image-download/bin/activate

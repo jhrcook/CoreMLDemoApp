@@ -39,3 +39,4 @@ records_tib <- tibble(Records = list(plant_tib))
 jsonlite::write_json(flatten(records_tib),
                      path = "download_plant_images.json",
                      pretty = TRUE)
+
