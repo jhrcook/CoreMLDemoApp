@@ -24,17 +24,17 @@ plant_names <- unlist(map(link_data, get_plant_names))
 cat(plant_names, sep = "\n", file = "plant_names.txt")
 
 
-TEST_PLANTS <- c(
-    "Frailea castanea",
-    "Titanopsis calcarea",
-    "Euphorbia obesa",
-    "Echeveria purpusorum",
-    "Haworthia pygmaea"
-)
+# TEST_PLANTS <- c(
+#     "Frailea castanea",
+#     "Titanopsis calcarea",
+#     "Euphorbia obesa",
+#     "Echeveria purpusorum",
+#     "Haworthia pygmaea"
+# )
 
 
 # save as JSON
-plant_tib <- tibble(keywords = TEST_PLANTS, limit = 100)
+plant_tib <- tibble(keywords = plant_names, limit = 100)
 records_tib <- tibble(Records = list(plant_tib))
 jsonlite::write_json(flatten(records_tib),
                      path = "download_plant_images.json",
