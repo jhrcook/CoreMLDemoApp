@@ -62,10 +62,55 @@ To run the download script.
 source download_google_images.sh
 ```
 
-
 ## ML Model Creation
 
-I will begin by following the tutorial [How to Retrain an Image Classifier for New Categories](https://www.tensorflow.org/hub/tutorials/image_retraining) to retrain a general image classifier to recognize the images. I can then export a CoreML object and import than into a simple iOS app that tries to predict the cactus from a new image.
+I began by following the tutorial [How to Retrain an Image Classifier for New Categories](https://www.tensorflow.org/hub/tutorials/image_retraining) to retrain a general image classifier to recognize the images. I can then exported a CoreML object and imported that into a simple iOS app that tries to predict the cactus from a new image.
+
+### Install TensorFlow and TensorFlow Hub
+
+[TensorFlow](https://www.tensorflow.org) is an incredibly powerful machine learning framework that is used extensively in education, research and production. (Excitingly, there is [Swift for TensorFlow](https://www.tensorflow.org/swift), though it is still in beta (as of August 18, 2019)).
+
+"[TensorFlow Hub](https://www.tensorflow.org/hub) is a library for the publication, discovery, and consumption of reusable parts of machine learning models."
+
+To install both, we can use `pip` from within the virtual environment.
+
+```bash
+source image-download/bin/activate
+pip3 install tensorflow
+pip3 install tensorflow-hub
+```
+
+### Practice with flowers
+
+There is an example on the tutorial for retraining ImageNet to identify several different plants by their flower. All of this was performed in a subdirectory called "flowers_example".
+
+```bash
+mkdir flowers_example
+cd flowers_example
+```
+
+The images were downloaded and unarchived.
+
+```bash
+
+curl -LO http://download.tensorflow.org/example_images/flower_photos.tgz
+tar xzf flower_photos.tgz
+ls flower_photos
+#> daisy  dandelion  LICENSE.txt  roses  sunflowers  tulips
+```
+
+The retraining script was downloaded from GitHub.
+
+```bash
+curl -LO https://github.com/tensorflow/hub/raw/master/examples/image_retraining/retrain.py
+```
+
+The script was run on the plant images.
+
+```bash
+# TODO: run this tomorrow
+python retrain.py --image_dir ./flower_photos
+```
 
 ---
 
