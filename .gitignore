@@ -208,3 +208,5 @@ vignettes/*.pdf
 # ignore downloaded images
 downloads/
 flowers_example/flower_photos/
+flowers_example/flower_photos.tgz
+
