@@ -5,19 +5,76 @@
 [![jhc twitter](https://img.shields.io/badge/Twitter-JoshDoesaThing-00aced.svg?style=flat&logo=twitter)](https://twitter.com/JoshDoesa)
 [![jhc website](https://img.shields.io/badge/Website-Joshua_Cook-5087B2.svg?style=flat&logo=telegram)](https://joshuacook.netlify.com)
 
+
+
 This is a demonstration of using CoreML to recognize succulents from images. It is still very much in it's early stages.
 
-**Overview**
+**Overview of the process**
 
 1. Create an R script that scrapes the plant names from [World of Succulents](https://worldofsucculents.com/browse-succulents-scientific-name).
 2. Create a shell script that uses [Google Images Download](https://github.com/hardikvasa/google-images-download) to download the images to a directory called "data/" and each plant has a subdirectory.
 3. Use TransorFlow to retrain an image classifier with my new data set.
 4. Use the `core-ml` python package to convert the TensorFlow model into one that can be imported into Xcode for CoreML
 
+## Model Creation
 
-## Data
+### Small-scale experiment
 
-I scraped plant names from [World of Succulents](https://worldofsucculents.com/browse-succulents-scientific-name) using '[rvest](https://cran.r-project.org/web/packages/rvest/index.html)' to retrieve and parse the HTML. The code is in "make\_plant\_list.r" and outputs a list of names to "plant_names.txt" and a JSON called "download\_plant\_images.json". Then, "download\_google\_images.sh" downloads the first 100 images from a Google Images search using the [Google Images Download](https://github.com/hardikvasa/google-images-download) python library.
+You can see the results from a small-scale experiement [here](./practice_plant_recognition.md). Overall, it went well, but the plants used were obviously different from each other, so it may be worth running a test with more simillar types of plants.
+
+### Data
+
+I scraped plant names from [World of Succulents](https://worldofsucculents.com/browse-succulents-scientific-name) using '[rvest](https://cran.r-project.org/web/packages/rvest/index.html)' to retrieve and parse the HTML. The code is in "make\_plant\_list.r" and outputs a list of names to "plant_names.txt"
+
+I then used [Snakemake](https://snakemake.readthedocs.io/en/stable/) to download all of the images for the 1,508 plants. Snakemake is a workflow management tool that has defined rules (functions) with general input and output. By passing specific values for the final output, Snakemake builds a directed acyclic graph (DAG) of the rules and inputs necessary to create the output which it then uses to organize the running of the necessary jobs. Therefore, I can build Snakemake to take a single plant name to download the images of. It will then ensure that the expected output is produced. This mechanism will make the process easily scalable to the current 1,500 plants, and even more in the future.
+
+**Description of the Snakefile**
+
+(Describe the Snakefile)
+
+[TODO: Only need to run the command line download-google-images command passing the plant name and limit on images.]
+
+**Description of cluster configuration JSON**
+
+[TODO]
+
+**Preparing for Snakemake**
+
+Create virtual environment.
+
+```bash
+module load python/3.6.0
+python3 -m venv image-download
+```
+
+Install necessary libraries.
+
+```bash
+pip3 install --upgrade pip
+pip3 snakemake google_images_download setuptools tensorflow tensorflow-hub
+```
+
+**Running Snakemake**
+
+```bash
+source image-download/bin/activate
+snakemake command for O2 (copy from RC_comutation_2)
+```
+
+**Filtering out bad images**
+
+Filter out WEBP and corrupt images.
+
+```bash
+module load imageMagick/6.9.1.10
+Rscript filter_bad_images.r
+```
+
+
+
+
+---
+[MAY BE ABLE TO DELETE EVERYTHING BELOW THIS]
 
 ### Preparing JSON file for doanloading
 
@@ -68,6 +125,13 @@ Some of the images were corrupted or of WEBP format that the TensorFlow script c
 module load imageMagick/6.9.1.10
 Rscript filter_bad_images.r
 ```
+
+[KEEP EVERYTHING BELOW THIS]
+---
+
+
+
+[TODO: REMOVE THE TUTORIAL PART AND RE-PHRASE TO MATCH HOW I USED THE SCRIPTS.]
 
 ## ML Model Creation
 
@@ -146,255 +210,7 @@ python label_image.py \
 
 It worked!
 
-### Training on practice cacti
 
-The only thing I should need to change the pointer for the images. I copied the two python scripts, "retrain.p" and "label_image.py", into the main directory and retrained the top layer of the network using my own practice data set of 100 images of 5 different succulents. This time, I saved the model to the current directory.
-
-```bash
-python retrain.py \
-    --image_dir ./downloads \
-    --output_graph ./practice_output_graph.pb \
-    --output_labels ./output_labels.txt \
-    --print_misclassified_test_images
-#> I0820 09:05:54.218355 140238499538752 graph_util_impl.py:311] Froze 378 variables.
-#> I0820 09:05:54.374392 140238499538752 graph_util_impl.py:364] Converted 378 variables to const ops.
-```
-
-Here is a screenshot of the TensorBoard after the training was finished. It may be overfit...
-
-
-<img src="project_images/tensorboard_20190820.png" width="500" />
-
-I then tested the model on *new* images from my own photos collection stored in "my_plant_images/".
-
-First with the following image of a Frailea castanea.
-
-<img src="my_plant_images/Frailea castanea_2.JPG" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/Frailea\ castanea_2.JPG
-#> frailea castanea 0.9845865
-#> euphorbia obesa 0.00694018
-#> haworthia pygmaea 0.004538389
-#> titanopsis calcarea 0.003469223
-#> echeveria purpusorum 0.00046558472
-```
-
-Success!
-
-How about a Haworthia pygmaea?
-
-<img src="my_plant_images/Haworthia pygmaea_2.jpg" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/Haworthia\ pygmaea_2.jpg
-#> haworthia pygmaea 0.96202874
-#> euphorbia obesa 0.013198692
-#> echeveria purpusorum 0.009985439
-#> frailea castanea 0.00901769
-#> titanopsis calcarea 0.0057695135
-```
-
-Yup!
-
-A Euphorbia obesa?
-
-<img src="my_plant_images/Euphorbia obesa_1.JPG" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/Euphorbia\ obesa_1.JPG
-#> euphorbia obesa 0.40142217
-#> frailea castanea 0.29709634
-#> titanopsis calcarea 0.18816541
-#> haworthia pygmaea 0.10937669
-#> echeveria purpusorum 0.0039393585
-```
-
-Not as confident. May an image more zoomed in?
-
-<img src="my_plant_images/Euphorbia obesa_3.JPG" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/Euphorbia\ obesa_3.JPG
-#> euphorbia obesa 0.993863
-#> titanopsis calcarea 0.0029714692
-#> frailea castanea 0.0027843206
-#> haworthia pygmaea 0.00036937947
-#> echeveria purpusorum 1.1810706e-05
-```
-
-What about less familliar shapes? The two pictures below received scores of 0.97 and 0.67 for Euphorbia obesa, respectively. However, cropping the sceond image to just the obesa resulted in a score of 0.99 for Euphorbia obesa.
-
-<img src="my_plant_images/Euphorbia obesa_4.JPG" width="350" />
-<img src="my_plant_images/Euphorbia obesa_5.JPG" width="350" />
-
-I ran the following two images of Titanopsis. The first was correctly identified, but the second scored the lowest for the correct category. 
-
-<img src="my_plant_images/Titanopsis calcarea_1.JPG" width="350" />
-<img src="my_plant_images/Titanopsis calcarea_2.JPG" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/Titanopsis\ calcarea_1.JPG
-#> titanopsis calcarea 0.7656298
-#> frailea castanea 0.10117628
-#> echeveria purpusorum 0.0850188
-#> haworthia pygmaea 0.04713126
-#> euphorbia obesa 0.0010438758
-
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/Titanopsis\ calcarea_2.JPG
-#> haworthia pygmaea 0.44177604
-#> frailea castanea 0.2246552
-#> echeveria purpusorum 0.13167255
-#> euphorbia obesa 0.120860636
-#> titanopsis calcarea 0.08103559
-```
-
-Zooming in on the misclassified photo boosted the score for Titanopsis to 0.99.
-
-<img src="my_plant_images/Titanopsis calcarea_3.JPG" width="350" />
-
-And finally, a Echeveria purpusorum.
-
-<img src="my_plant_images/Echeveria purpusorum_2.jpg" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/Echeveria\ purpusorum_2.jpg
-#> echeveria purpusorum 0.97766393
-#> haworthia pygmaea 0.017333306
-#> titanopsis calcarea 0.0033603976
-#> euphorbia obesa 0.0013941285
-#> frailea castanea 0.00024822386
-```
-
-No problem.
-
-Now, I have added in some "random" images. Let's see how the model does?
-
-A variety of Sempervivum resulted in low confidence across the board. Unsurprisingly, the most confidence was given to the Echeveria.
-
-<img src="my_plant_images/random_1.JPG" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/random_1.JPG
-#> echeveria purpusorum 0.6112121
-#> euphorbia obesa 0.22624858
-#> haworthia pygmaea 0.095057175
-#> titanopsis calcarea 0.046240527
-#> frailea castanea 0.021241713
-```
-Another Echeveria produced similar results.
-
-<img src="my_plant_images/random_2.jpg" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/random_2.jpg
-#> echeveria purpusorum 0.6326179
-#> haworthia pygmaea 0.18916579
-#> euphorbia obesa 0.13849086
-#> frailea castanea 0.031310003
-#> titanopsis calcarea 0.008415436
-```
-
-A Graptosedum gets a high score for a Haworthia, perhaps because the shapes of the leaves are quite similar.
-
-<img src="my_plant_images/random_3.jpg" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/random_3.jpg
-#> haworthia pygmaea 0.8702831
-#> echeveria purpusorum 0.08355066
-#> euphorbia obesa 0.022053052
-#> frailea castanea 0.015273594
-#> titanopsis calcarea 0.008839603
-```
-
-Here is an (ugly) arrangement of a dying/dead cactus and two Lithops in poor shape. Encouragingly, the model does not give high confidence to any of the classes, but the highest is the Frailea which are small, circular, and often found in groups. If these Lithops were darker, I bet this percentage would increase.
-
-<img src="my_plant_images/random_4.jpg" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/random_4.jpg
-#> frailea castanea 0.46954283
-#> titanopsis calcarea 0.27296653
-#> euphorbia obesa 0.17989409
-#> haworthia pygmaea 0.053318836
-#> echeveria purpusorum 0.02427767
-```
-
-The last test: my kitchen table. It was not recognized as a plant. From this and the above random tests, I am quite encouraged that the model was not overfit.
-
-<img src="my_plant_images/random_5.JPG" width="350" />
-
-```bash
-python label_image.py \
-    --graph=./practice_output_graph.pb \
-    --labels=./output_labels.txt \
-    --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/random_5.JPG
-#> euphorbia obesa 0.51259345
-#> frailea castanea 0.2750652
-#> haworthia pygmaea 0.08634063
-#> titanopsis calcarea 0.07448698
-#> echeveria purpusorum 0.051513758
-```
-
-Obviously, the plants I chose for practice were very dissimilar in shape, texture, and color. It will be interesting to see how the model does with more possible categories and with plants that look more similar.
 
 ---
 
