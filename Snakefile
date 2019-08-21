@@ -9,6 +9,7 @@ with open("plant_names.txt") as fin:
 numberOfImages = 100
 
 
+# some notes
 
 
 
