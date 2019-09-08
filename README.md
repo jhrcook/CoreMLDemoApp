@@ -57,7 +57,7 @@ Below is an example command to download 20 images of *Euphorbia obesa*.
 I downloaded all of the images for every plant by submitting a job-array, where each job downloads *N* images for a single plant. The script "download_google_images.sh" takes an integer (the job number) and downloads the images for the plant on that line of "plant_names.txt".
 
 ```bash
-sbatch --array=1-5 download_google_images.sh
+sbatch --array=1-$(wc -l < plant_names.txt) download_google_images.sh
 ```
 
 ### Remove corrupted files and wrong formats
@@ -70,7 +70,6 @@ Some of the images were corrupted or of WEBP format that the TensorFlow script c
 module load imageMagick/6.9.1.10
 Rscript filter_bad_images.r
 ```
-
 
 ## ML Model Creation
 
