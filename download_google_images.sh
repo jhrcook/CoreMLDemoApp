@@ -1,9 +1,23 @@
 #!/bin/bash
 
-module load python/3.6.0 R/3.5.1 imageMagick/6.9.1.10
+#SBATCH -p short
+#SBATCH -c 1
+#SBATCH -t 0-00:10
+#SBATCH --mem=4G
+#SBATCH --mail-type=NONE
+#SBATCH -o slurm_logs/imgdnld_%a.log
+#SBATCH -e slurm_logs/imgdnld_%a.log
 
-source image-download/bin/activate
-googleimagesdownload --config_file download_plant_images.json
-deactivate
+module load imageMagick/6.9.1.10
 
-Rscript filter_bad_images.r
+plant=$(sed -n "$SLURM_ARRAY_TASK_ID p" plant_names.txt)
+save_dir=$(echo $plant | tr " " "_")
+
+# how many images to download per plant
+num_images=20
+
+./googliser.sh \
+  --phrase $plant \
+  --number $num_images \
+  --no-gallery \
+  --output images/${save_dir}

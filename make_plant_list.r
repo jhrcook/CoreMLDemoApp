@@ -34,9 +34,9 @@ cat(plant_names, sep = "\n", file = "plant_names.txt")
 
 
 # save as JSON
-plant_tib <- tibble(keywords = plant_names, limit = 100)
-records_tib <- tibble(Records = list(plant_tib))
-jsonlite::write_json(flatten(records_tib),
-                     path = "download_plant_images.json",
-                     pretty = TRUE)
+# plant_tib <- tibble(keywords = plant_names, limit = 100)
+# records_tib <- tibble(Records = list(plant_tib))
+# jsonlite::write_json(flatten(records_tib),
+#                      path = "download_plant_images.json",
+#                      pretty = TRUE)
 
