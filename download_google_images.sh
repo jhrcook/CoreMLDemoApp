@@ -14,7 +14,7 @@ plant=$(sed -n "$SLURM_ARRAY_TASK_ID p" plant_names.txt)
 save_dir=$(echo $plant | tr " " "_")
 
 # how many images to download per plant
-num_images=20
+num_images=50
 
 ./googliser.sh \
   --phrase $plant \
