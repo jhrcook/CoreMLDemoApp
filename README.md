@@ -82,13 +82,10 @@ Rscript filter_bad_images.r
 
 ### Ensure all images were properly downloaded.
 
-The R Markdown file "check_images_downloaded.Rmd" checks that each plant has images downloaded. It ouputs an HTML file of the results.
-
-**TODO:** make the R Markdown to check all images were downloaded.
+The R Markdown file "check_images_downloaded.Rmd" checks that each plant has images downloaded. It outputs an HTML file of the results.
 
 ```bash
 Rscript -e 'rmarkdown::render("check_images_downloaded.Rmd")'
-#> Summary output information
 ```
 
 ## ML Model Creation
