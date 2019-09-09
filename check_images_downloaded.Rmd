@@ -1,0 +1,112 @@
+---
+title: "Check that images were downloaded"
+author: "Joshua Cook"
+date: "2019-09-09"
+output:
+    html_document:
+        toc: true
+        theme: paper
+        includes:
+            in_header: header.html
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FASLE}
+knitr::opts_chunk$set(
+    echo = FALSE,
+    comment = "#>"
+)
+library(tidyverse)
+```
+This document contains a summary of the photos downloaded for the plants.
+
+## Number of images per plant
+
+```{r}
+plant_dirs <- list.dirs("images", )[-1]
+plant_names <- basename(plant_dirs)
+```
+
+```{r}
+count_files_in <- function(dir_path) {
+    purrr::map_int(dir_path, ~ length(list.files(.x)))
+}
+
+images_tib <- tibble(dir = plant_dirs, name = plant_names) %>%
+    mutate(num_files = count_files_in(dir_path = dir))
+```
+
+Number of unique plants: `r n_distinct(plant_names)`  
+Mean number of images: `r round(mean(images_tib$num_files), 2)`  
+Median number of images: `r round(median(images_tib$num_files), 2)`  
+Min./max. number of images: `r min(images_tib$num_files)` / `r max(images_tib$num_files)`  
+Number of files with less than the maximum number of images: `r sum(images_tib$num_files < max(images_tib$num_files))`
+
+```{r}
+images_tib %>%
+    mutate(plant_names = fct_reorder(plant_names, num_files)) %>%
+    ggplot(aes(x = plant_names, y = num_files)) +
+    geom_col(color = "grey50") +
+    scale_y_continuous(expand = expand_scale(mult = c(0, 0))) +
+    theme_bw() +
+    theme(
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_blank()
+    ) +
+    labs(
+        x = "plant",
+        y = "number of images",
+        title = "Number of images for each plant"
+    )
+```
+
+```{r}
+if (any(images_tib$num_files < max(images_tib$num_files))) {
+    images_tib %>%
+        filter(num_files < max(num_files)) %>%
+        mutate(plant_names = fct_reorder(plant_names, num_files)) %>%
+        ggplot(aes(x = plant_names, y = num_files)) +
+        geom_col(color = "grey50") +
+        scale_y_continuous(expand = expand_scale(mult = c(0, 0))) +
+        theme_bw() +
+        theme(
+            plot.title = element_text(hjust = 0.5),
+            axis.text.x = element_blank()
+        ) +
+        labs(
+            x = "plant",
+            y = "number of images",
+            title = "Number of images for plants with fewer than the maximum"
+        )
+}
+
+```
+
+## Image sizes
+
+```{r}
+image_sizes <- list.files("images", recursive = TRUE, full.names = TRUE) %>%
+    file.size() %>%
+    gdata::humanReadable(units = "K", standard = "Unix") %>%
+    str_remove(" K") %>%
+    as.numeric()
+    hist(image_sizes)
+tibble(img_size = image_sizes / 1e3) %>%
+    ggplot(aes(x = img_size)) +
+    geom_density(color = "black", fill = "grey50") +
+    scale_y_continuous(expand = expand_scale(mult = c(0, 0.02))) +
+    scale_x_continuous(expand = expand_scale(mult = c(0, 0.02)), breaks = c(1:100)) +
+    theme_bw() +
+    theme(
+        plot.title = element_text(hjust = 0.5)
+    ) +
+    labs(
+        x = "image file size (MB)",
+        y = "density",
+        title = "Distribution of image file sizes"
+    )
+```
+
+Total number of images: `r length(image_sizes)`
+Mean image size: `r round(mean(image_sizes) / 1e3, 2)` MB
+Median image size: `r round(median(image_sizes) / 1e3, 2)` MB
+Min./max. image size: `r round(min(image_sizes) / 1e3, 2)` MB / `r round(max(image_sizes) / 1e3, 2)` MB
