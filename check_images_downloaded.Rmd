@@ -10,7 +10,7 @@ output:
             in_header: header.html
 ---
 
-```{r setup, echo=FALSE, message=FALSE, warning=FASLE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(
     echo = FALSE,
     comment = "#>"
