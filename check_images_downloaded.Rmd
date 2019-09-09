@@ -40,7 +40,7 @@ images_tib <- tibble(dir = plant_dirs, name = plant_names) %>%
 
 ### Summary Stats
 
-Number of plants expected: `r n_distinct(plant_list)`
+Number of plants expected: `r n_distinct(plant_list)`  
 Number of plants with images: `r n_distinct(plant_names)`  
 Mean number of images: `r round(mean(images_tib$num_files), 2)`  
 Median number of images: `r round(median(images_tib$num_files), 2)`  
