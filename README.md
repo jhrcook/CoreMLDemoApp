@@ -12,9 +12,15 @@ This is a demonstration of using CoreML to recognize succulents from images. It 
 **Overview of the process**
 
 1. Create an R script that scrapes the plant names from [World of Succulents](https://worldofsucculents.com/browse-succulents-scientific-name).
-2. Create a shell script that uses [Google Images Download](https://github.com/hardikvasa/google-images-download) to download the images to a directory called "data/" and each plant has a subdirectory.
+2. Create a shell script that uses ['googliser'](https://github.com/teracow/googliser) to download the images to a directory called "images/" and each plant has a subdirectory.
 3. Use TransorFlow to retrain an image classifier with my new data set.
-4. Use the `core-ml` python package to convert the TensorFlow model into one that can be imported into Xcode for CoreML
+4. Use the `core-ml` python package to convert the TensorFlow model into one that can be imported into Xcode for CoreML.
+
+**Current Status**
+
+* I have made the web-scraping script and created a list of over 1,500 succulents.
+* I have ['googliser'](https://github.com/teracow/googliser) funcitoning and a job-array submission system to parrallelize the process for each plant.
+* [Here](./practice_plant_recognition.md), I have demonstrated the feasibility of the workflow using a sample of 5 plants.
 
 # Work-flow
 
@@ -31,6 +37,8 @@ Rscript make_plant_list.r
 ### Download images
 
 I am using the bash tool ['googliser'](https://github.com/teracow/googliser) to download plant images. It currently has a limit of 1,000 images  per query. This should be sufficient for my needs, though.
+
+#### Set up 'googliser'
 
 The tool can be installed from GitHub using the following command.
 
@@ -53,6 +61,7 @@ Below is an example command to download 20 images of *Euphorbia obesa*.
   --no-gallery \
   --output images/Euphorbia_obesa
 ```
+#### Downloading the images in parallel
 
 I downloaded all of the images for every plant by submitting a job-array, where each job downloads *N* images for a single plant. The script "download_google_images.sh" takes an integer (the job number) and downloads the images for the plant on that line of "plant_names.txt".
 
@@ -62,7 +71,7 @@ sbatch --array=1-$(wc -l < plant_names.txt) download_google_images.sh
 
 ### Remove corrupted files and wrong formats
 
-**(The following step may no longer be necessary since each image is reportedly a jpeg.)**
+**(The following step may no longer be necessary since each image is reportedly a JPEG.)**
 
 Some of the images were corrupted or of WEBP format that the TensorFlow script could not accept. These were filtered using another R script.
 
@@ -71,9 +80,20 @@ module load imageMagick/6.9.1.10
 Rscript filter_bad_images.r
 ```
 
+### Ensure all images were properly downloaded.
+
+The R Markdown file "check_images_downloaded.Rmd" checks that each plant has images downloaded. It ouputs an HTML file of the results.
+
+**TODO:** make the R Markdown to check all images were downloaded.
+
+```bash
+Rscript -e "rmarkdown::render(check_images_downloaded.Rmd)"
+#> Summary output information
+```
+
 ## ML Model Creation
 
-I began by following the tutorial [How to Retrain an Image Classifier for New Categories](https://www.tensorflow.org/hub/tutorials/image_retraining) to retrain a general image classifier to recognize the images. I can then exported a CoreML object and imported that into a simple iOS app that tries to predict the cactus from a new image.
+I began by following the tutorial [How to Retrain an Image Classifier for New Categories](https://www.tensorflow.org/hub/tutorials/image_retraining) to retrain a general image classifier to recognize the images. I can then exported a CoreML object and import that into a simple iOS app that tries to predict the cactus from a new image.
 
 ### Install TensorFlow and TensorFlow Hub
 
@@ -96,7 +116,7 @@ pip3 install --upgrade pip
 pip3 install tensorflow tensorflow-hub
 ```
 
-### Practice with flowers
+### Example retraining: practice with flowers
 
 There is an example on the tutorial for retraining ImageNet to identify several different plants by their flower. All of this was performed in a subdirectory called "flowers_example".
 
@@ -159,9 +179,9 @@ It worked!
 
 You can see the results from a small-scale experiement [here](./practice_plant_recognition.md). Overall, it went well, but the plants used were obviously different from each other, so it may be worth running a test with more similar types of plants.
 
-### Retraining workflow
+### Retraining work-flow
 
-**TODO**
+**TODO:** write out the standard workflow for this process.
 
 ---
 
