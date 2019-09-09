@@ -19,7 +19,7 @@ library(tidyverse)
 ```
 This document contains a summary of the photos downloaded for the plants.
 
-## Number of images per plant
+## Plants
 
 ```{r}
 plant_dirs <- list.dirs("images", )[-1]
@@ -34,6 +34,8 @@ count_files_in <- function(dir_path) {
 images_tib <- tibble(dir = plant_dirs, name = plant_names) %>%
     mutate(num_files = count_files_in(dir_path = dir))
 ```
+
+### Summary Stats
 
 Number of unique plants: `r n_distinct(plant_names)`  
 Mean number of images: `r round(mean(images_tib$num_files), 2)`  
@@ -81,7 +83,7 @@ if (any(images_tib$num_files < max(images_tib$num_files))) {
 
 ```
 
-## Image sizes
+## Images
 
 ```{r}
 image_sizes <- list.files("images", recursive = TRUE, full.names = TRUE) %>%
@@ -89,7 +91,6 @@ image_sizes <- list.files("images", recursive = TRUE, full.names = TRUE) %>%
     gdata::humanReadable(units = "K", standard = "Unix") %>%
     str_remove(" K") %>%
     as.numeric()
-    hist(image_sizes)
 tibble(img_size = image_sizes / 1e3) %>%
     ggplot(aes(x = img_size)) +
     geom_density(color = "black", fill = "grey50") +
@@ -106,7 +107,17 @@ tibble(img_size = image_sizes / 1e3) %>%
     )
 ```
 
-Total number of images: `r length(image_sizes)`
-Mean image size: `r round(mean(image_sizes) / 1e3, 2)` MB
-Median image size: `r round(median(image_sizes) / 1e3, 2)` MB
+### Summary Stats
+
+Total number of images: `r length(image_sizes)`  
+Mean image size: `r round(mean(image_sizes) / 1e3, 2)` MB  
+Median image size: `r round(median(image_sizes) / 1e3, 2)` MB  
 Min./max. image size: `r round(min(image_sizes) / 1e3, 2)` MB / `r round(max(image_sizes) / 1e3, 2)` MB
+
+---
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
