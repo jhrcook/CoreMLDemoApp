@@ -87,7 +87,7 @@ The R Markdown file "check_images_downloaded.Rmd" checks that each plant has ima
 **TODO:** make the R Markdown to check all images were downloaded.
 
 ```bash
-Rscript -e "rmarkdown::render(check_images_downloaded.Rmd)"
+Rscript -e 'rmarkdown::render("check_images_downloaded.Rmd")'
 #> Summary output information
 ```
 
