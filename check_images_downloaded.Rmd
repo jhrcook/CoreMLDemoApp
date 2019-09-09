@@ -22,8 +22,11 @@ This document contains a summary of the photos downloaded for the plants.
 ## Plants
 
 ```{r}
-plant_dirs <- list.dirs("images", )[-1]
-plant_names <- basename(plant_dirs)
+plant_dirs <- list.dirs("images", )[-1] %>% unlist()
+plant_names <- basename(plant_dirs) %>% unlist()
+plant_list <- readLines("plant_names.txt") %>%
+    str_replace(" ", "_") %>%
+    unlist()
 ```
 
 ```{r}
@@ -37,7 +40,8 @@ images_tib <- tibble(dir = plant_dirs, name = plant_names) %>%
 
 ### Summary Stats
 
-Number of unique plants: `r n_distinct(plant_names)`  
+Number of plants expected: `r n_distinct(plant_list)`
+Number of plants with images: `r n_distinct(plant_names)`  
 Mean number of images: `r round(mean(images_tib$num_files), 2)`  
 Median number of images: `r round(median(images_tib$num_files), 2)`  
 Min./max. number of images: `r min(images_tib$num_files)` / `r max(images_tib$num_files)`  
@@ -45,7 +49,7 @@ Number of files with less than the maximum number of images: `r sum(images_tib$n
 
 ```{r}
 images_tib %>%
-    mutate(plant_names = fct_reorder(plant_names, num_files)) %>%
+    mutate(plant_names = fct_reorder(plant_names, -num_files)) %>%
     ggplot(aes(x = plant_names, y = num_files)) +
     geom_col(color = "grey50") +
     scale_y_continuous(expand = expand_scale(mult = c(0, 0))) +
@@ -61,11 +65,11 @@ images_tib %>%
     )
 ```
 
-```{r}
+```{r, eval=FALSE}
 if (any(images_tib$num_files < max(images_tib$num_files))) {
     images_tib %>%
         filter(num_files < max(num_files)) %>%
-        mutate(plant_names = fct_reorder(plant_names, num_files)) %>%
+        mutate(plant_names = fct_reorder(plant_names, -num_files)) %>%
         ggplot(aes(x = plant_names, y = num_files)) +
         geom_col(color = "grey50") +
         scale_y_continuous(expand = expand_scale(mult = c(0, 0))) +

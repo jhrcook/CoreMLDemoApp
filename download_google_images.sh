@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH -c 1
-#SBATCH -t 0-00:10
+#SBATCH -t 0-00:03
 #SBATCH --mem=4G
 #SBATCH --mail-type=NONE
 #SBATCH -o slurm_logs/imgdnld_%a.log
