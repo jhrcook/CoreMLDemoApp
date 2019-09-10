@@ -91,7 +91,7 @@ if (any(images_tib$num_files < EXPECTED_NUMBER_OF_IMAGES)) {
 
 ```{r}
 failed_download_plants <- images_tib %>%
-    filter(num_files < EXPECTED_NUMBER_OF_IMAGES) %>%
+    filter(num_files < EXPECTED_NUMBER_OF_IMAGES - 50) %>%
     pull(name) %>%
     str_replace_all("_", " ") %>%
     str_to_title()
@@ -100,7 +100,7 @@ if (length(failed_download_plants) > 0) {
 }
 ```
 
-There were `r length(failed_download_plants)` saved to "failed_dwnlds_plant_names.txt". These can be re-run using the following command:
+There were `r length(failed_download_plants)` plant names written to "failed_dwnlds_plant_names.txt". These can be re-run using the following command:
 
 ```bash
 sbatch --array=1-$(wc -l < failed_dwnlds_plant_names.txt) download_google_images.sh failed_dwnlds_plant_names.txt
