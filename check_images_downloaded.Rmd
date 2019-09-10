@@ -92,7 +92,9 @@ if (any(images_tib$num_files < EXPECTED_NUMBER_OF_IMAGES)) {
 ```{r}
 failed_download_plants <- images_tib %>%
     filter(num_files < EXPECTED_NUMBER_OF_IMAGES) %>%
-    pull(name)
+    pull(name) %>%
+    str_replace_all("_", " ") %>%
+    str_to_title()
 if (length(failed_download_plants) > 0) {
     cat(failed_download_plants, file = "failed_dwnlds_plant_names.txt", sep = "\n")
 }
