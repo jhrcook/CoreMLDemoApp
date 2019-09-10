@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
     comment = "#>"
 )
 library(tidyverse)
+
+EXPECTED_NUMBER_OF_IMAGES <- 300
 ```
 This document contains a summary of the photos downloaded for the plants.
 
@@ -41,22 +43,22 @@ images_tib <- tibble(dir = plant_dirs, name = plant_names) %>%
 ### Summary Stats
 
 Number of plants expected: `r n_distinct(plant_list)`  
-Number of plants with images: `r n_distinct(plant_names)`  
+Number of plants with directory: `r n_distinct(plant_names)`  
 Mean number of images: `r round(mean(images_tib$num_files), 2)`  
 Median number of images: `r round(median(images_tib$num_files), 2)`  
 Min./max. number of images: `r min(images_tib$num_files)` / `r max(images_tib$num_files)`  
-Number of files with less than the maximum number of images: `r sum(images_tib$num_files < max(images_tib$num_files))`
+Number of files with less than the expected number of images: `r sum(images_tib$num_files < EXPECTED_NUMBER_OF_IMAGES)`
 
 ```{r}
 images_tib %>%
-    mutate(plant_names = fct_reorder(plant_names, -num_files)) %>%
+    mutate(plant_names = fct_reorder(name, -num_files)) %>%
     ggplot(aes(x = plant_names, y = num_files)) +
-    geom_col(color = "grey50") +
+    geom_col(color = "dodgerblue") +
     scale_y_continuous(expand = expand_scale(mult = c(0, 0))) +
     theme_bw() +
     theme(
         plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_blank()
+        axis.text.x = element_blank(),
     ) +
     labs(
         x = "plant",
@@ -65,27 +67,43 @@ images_tib %>%
     )
 ```
 
-```{r, eval=FALSE}
-if (any(images_tib$num_files < max(images_tib$num_files))) {
+```{r}
+if (any(images_tib$num_files < EXPECTED_NUMBER_OF_IMAGES)) {
     images_tib %>%
-        filter(num_files < max(num_files)) %>%
-        mutate(plant_names = fct_reorder(plant_names, -num_files)) %>%
+        filter(num_files < EXPECTED_NUMBER_OF_IMAGES) %>%
+        mutate(name = str_replace_all(name, "_", " "),
+               plant_names = fct_reorder(name, -num_files)) %>%
         ggplot(aes(x = plant_names, y = num_files)) +
-        geom_col(color = "grey50") +
+        geom_col(fill = "dodgerblue") +
         scale_y_continuous(expand = expand_scale(mult = c(0, 0))) +
         theme_bw() +
         theme(
             plot.title = element_text(hjust = 0.5),
-            axis.text.x = element_blank()
+            axis.text.x = element_text(angle = 50, hjust = 1.0, size = 5),
+            axis.title.x = element_blank()
         ) +
         labs(
-            x = "plant",
             y = "number of images",
-            title = "Number of images for plants with fewer than the maximum"
+            title = paste0("Number of images for plants with fewer than expected (", EXPECTED_NUMBER_OF_IMAGES, ")")
         )
 }
-
 ```
+
+```{r}
+failed_download_plants <- images_tib %>%
+    filter(num_files < EXPECTED_NUMBER_OF_IMAGES) %>%
+    pull(name)
+if (length(failed_download_plants) > 0) {
+    cat(failed_download_plants, file = "failed_dwnlds_plant_names.txt", sep = "\n")
+}
+```
+
+There were `r length(failed_download_plants)` saved to "failed_dwnlds_plant_names.txt". These can be re-run using the following command:
+
+```bash
+sbatch --array=1-$(wc -l < failed_dwnlds_plant_names.txt) download_google_images.sh failed_dwnlds_plant_names.txt
+```
+
 
 ## Images
 
@@ -114,6 +132,7 @@ tibble(img_size = image_sizes / 1e3) %>%
 ### Summary Stats
 
 Total number of images: `r length(image_sizes)`  
+Total storage space: `r round(sum(image_sizes) / 1e3, 2)` MB  
 Mean image size: `r round(mean(image_sizes) / 1e3, 2)` MB  
 Median image size: `r round(median(image_sizes) / 1e3, 2)` MB  
 Min./max. image size: `r round(min(image_sizes) / 1e3, 2)` MB / `r round(max(image_sizes) / 1e3, 2)` MB
