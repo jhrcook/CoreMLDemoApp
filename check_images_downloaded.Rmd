@@ -84,7 +84,7 @@ if (any(images_tib$num_files < EXPECTED_NUMBER_OF_IMAGES)) {
         ) +
         labs(
             y = "number of images",
-            title = paste0("Number of images for plants with fewer than expected (", EXPECTED_NUMBER_OF_IMAGES, ")")
+            title = paste0("Plants with fewer images than expected (", EXPECTED_NUMBER_OF_IMAGES, ")")
         )
 }
 ```
