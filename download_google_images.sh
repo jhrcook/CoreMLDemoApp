@@ -10,7 +10,7 @@
 
 module load imageMagick/6.9.1.10
 
-plant=$(sed -n "$SLURM_ARRAY_TASK_ID p" plant_names.txt)
+plant=$(sed -n "$SLURM_ARRAY_TASK_ID p" $1)
 save_dir=$(echo $plant | tr " " "_")
 
 # how many images to download per plant

@@ -22,7 +22,8 @@ This is a demonstration of using CoreML to recognize succulents from images. It 
 * I have ['googliser'](https://github.com/teracow/googliser) funcitoning and a job-array submission system to parrallelize the process for each plant.
 * [Here](./practice_plant_recognition.md), I have demonstrated the feasibility of the workflow using a sample of 5 plants.
 
-# Work-flow
+
+# Work-flow {#workflow}
 
 ## Data Acquisition
 
@@ -66,7 +67,7 @@ Below is an example command to download 20 images of *Euphorbia obesa*.
 I downloaded all of the images for every plant by submitting a job-array, where each job downloads *N* images for a single plant. The script "download_google_images.sh" takes an integer (the job number) and downloads the images for the plant on that line of "plant_names.txt".
 
 ```bash
-sbatch --array=1-$(wc -l < plant_names.txt) download_google_images.sh
+sbatch --array=1-$(wc -l < plant_names.txt) download_google_images.sh plant_names.txt
 ```
 
 ### Remove corrupted files and wrong formats
@@ -87,6 +88,13 @@ The R Markdown file "check_images_downloaded.Rmd" checks that each plant has ima
 ```bash
 Rscript -e 'rmarkdown::render("check_images_downloaded.Rmd")'
 ```
+
+In addition, if there are plants that do not have all of the images downloaded, it creates the file "failed_dwnlds_plant_names.txt" with the list of plant names to be run, again.
+
+```bash
+sbatch --array=1-$(wc -l < failed_dwnlds_plant_names.txt) download_google_images.sh failed_dwnlds_plant_names.txt
+```
+
 
 ## ML Model Creation
 
