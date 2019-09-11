@@ -17,6 +17,7 @@ get_plant_names <- function(lnk) {
     txt <- str_remove_all(txt, "\'")
     txt <- str_replace_all(txt, "\u00A0", " ")  # to remove "&nbsp;"
     txt <- word(txt, start = 1, end = 2, sep = " ")
+    txt <- str_to_sentence(txt)
     return(unique(txt))
 }
 
