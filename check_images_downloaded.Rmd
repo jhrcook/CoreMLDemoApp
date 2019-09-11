@@ -94,7 +94,8 @@ failed_download_plants <- images_tib %>%
     filter(num_files < EXPECTED_NUMBER_OF_IMAGES - 50) %>%
     pull(name) %>%
     str_replace_all("_", " ") %>%
-    str_to_title()
+    str_to_title() %>%
+    unique()
 if (length(failed_download_plants) > 0) {
     cat(failed_download_plants, file = "failed_dwnlds_plant_names.txt", sep = "\n")
 }
