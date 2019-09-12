@@ -89,7 +89,7 @@ The R Markdown file "check_images_downloaded.Rmd" checks that each plant has ima
 Rscript -e 'rmarkdown::render("check_images_downloaded.Rmd")'
 ```
 
-In addition, if there are plants that do not have all of the images downloaded, it creates the file "failed_dwnlds_plant_names.txt" with the list of plant names to be run, again.
+In addition, if there are plants that do not have all of the images downloaded (or are within 50 images of the expected number), it creates the file "failed_dwnlds_plant_names.txt" with a list of plant names to be run, again.
 
 ```bash
 sbatch --array=1-$(wc -l < failed_dwnlds_plant_names.txt) download_google_images.sh failed_dwnlds_plant_names.txt
