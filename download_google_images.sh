@@ -17,7 +17,8 @@ save_dir=$(echo $plant | tr " " "_")
 num_images=300
 
 ./googliser.sh \
-  --phrase $plant \
+  --phrase "$plant" \
   --number $num_images \
   --no-gallery \
-  --output images/${save_dir}
+  --output images/${save_dir} \
+  --failures $num_images
