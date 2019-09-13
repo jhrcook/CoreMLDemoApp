@@ -5,8 +5,8 @@
 #SBATCH -t 0-00:03
 #SBATCH --mem=4G
 #SBATCH --mail-type=NONE
-#SBATCH -o slurm_logs/imgdnld_%a.log
-#SBATCH -e slurm_logs/imgdnld_%a.log
+#SBATCH -o slurm_logs/imgdnld_%A_%a.log
+#SBATCH -e slurm_logs/imgdnld_%A_%a.log
 
 module load imageMagick/6.9.1.10
 
