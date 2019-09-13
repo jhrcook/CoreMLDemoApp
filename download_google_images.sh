@@ -20,5 +20,5 @@ num_images=300
   --phrase "$plant" \
   --number $num_images \
   --no-gallery \
-  --output images/${save_dir} \
+  --output /n/scratch2/jc604_plantimages/${save_dir} \
   --failures $num_images
