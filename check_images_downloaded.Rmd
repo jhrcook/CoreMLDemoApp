@@ -18,13 +18,15 @@ knitr::opts_chunk$set(
 library(tidyverse)
 
 EXPECTED_NUMBER_OF_IMAGES <- 300
+
+PLANT_IMG_DIR <- "/n/scratch2/jc604_plantimages/"
 ```
 This document contains a summary of the photos downloaded for the plants.
 
 ## Plants
 
 ```{r}
-plant_dirs <- list.dirs("images", )[-1] %>% unlist()
+plant_dirs <- list.dirs(PLANT_IMG_DIR, )[-1] %>% unlist()
 plant_names <- basename(plant_dirs) %>% unlist()
 plant_list <- readLines("plant_names.txt") %>%
     str_replace(" ", "_") %>%
@@ -111,7 +113,7 @@ sbatch --array=1-$(wc -l < failed_dwnlds_plant_names.txt) download_google_images
 ## Images
 
 ```{r}
-image_sizes <- list.files("images", recursive = TRUE, full.names = TRUE) %>%
+image_sizes <- list.files(PLANT_IMG_DIR, recursive = TRUE, full.names = TRUE) %>%
     file.size() %>%
     gdata::humanReadable(units = "K", standard = "Unix") %>%
     str_remove(" K") %>%
