@@ -67,7 +67,9 @@ Below is an example command to download 20 images of *Euphorbia obesa*.
 I downloaded all of the images for every plant by submitting a job-array, where each job downloads *N* images for a single plant. The script "download_google_images.sh" takes an integer (the job number) and downloads the images for the plant on that line of "plant_names.txt".
 
 ```bash
-sbatch --array=1-$(wc -l < plant_names.txt) download_google_images.sh plant_names.txt
+sbatch \
+  --array=1-$(wc -l < plant_names.txt) download_google_images.sh plant_names.txt \
+  --constraint="scratch2"
 ```
 
 ### Remove corrupted files and wrong formats
@@ -92,7 +94,9 @@ Rscript -e 'rmarkdown::render("check_images_downloaded.Rmd")'
 In addition, if there are plants that do not have all of the images downloaded (or are within 50 images of the expected number), it creates the file "failed_dwnlds_plant_names.txt" with a list of plant names to be run, again.
 
 ```bash
-sbatch --array=1-$(wc -l < failed_dwnlds_plant_names.txt) download_google_images.sh failed_dwnlds_plant_names.txt
+sbatch \
+  --array=1-$(wc -l < failed_dwnlds_plant_names.txt) download_google_images.sh failed_dwnlds_plant_names.txt \
+  --constraint="scratch2"
 ```
 
 
