@@ -102,7 +102,7 @@ sbatch \
 
 ## ML Model Creation
 
-I began by following the tutorial [How to Retrain an Image Classifier for New Categories](https://www.tensorflow.org/hub/tutorials/image_retraining) to retrain a general image classifier to recognize the images. I can then exported a CoreML object and import that into a simple iOS app that tries to predict the cactus from a new image.
+I began by following the tutorial [How to Retrain an Image Classifier for New Categories](https://www.tensorflow.org/hub/tutorials/image_retraining) to retrain a general image classifier to recognize the images. I can then convert to and export a CoreML object and import that into a simple iOS app that tries to predict the cactus from a new image.
 
 ### Install TensorFlow and TensorFlow Hub
 
@@ -137,7 +137,6 @@ cd flowers_example
 The images were downloaded and unarchived.
 
 ```bash
-
 curl -LO http://download.tensorflow.org/example_images/flower_photos.tgz
 tar xzf flower_photos.tgz
 ls flower_photos
@@ -156,7 +155,7 @@ The script was run on the plant images.
 python retrain.py --image_dir ./flower_photos
 ```
 
-If the connection to O2 is set up correctly, the TensorBoard can be run and opened locally.
+[If the connection to O2 is set up correctly](), the TensorBoard can be run and opened locally.
 
 ```bash
 tensorboard --logdir /tmp/retrain_logs
@@ -190,7 +189,29 @@ You can see the results from a small-scale experiement [here](./practice_plant_r
 
 ### Retraining work-flow
 
-**TODO:** write out the standard workflow for this process.
+Activate the virtual environment.
+
+```bash
+module load python/3.6.0
+source image-download/bin/activate
+```
+
+Retrain ImageNet.
+
+```bash
+python retrain.py --image_dir ./flower_photos
+```
+
+Test on some images.
+
+```bash
+python label_image.py \
+    --graph=/tmp/output_graph.pb \
+    --labels=/tmp/output_labels.txt \
+    --input_layer=Placeholder \
+    --output_layer=final_result \
+    --image=./my_plant_images/Euphorbia obesa_5.JPG
+```
 
 ---
 
