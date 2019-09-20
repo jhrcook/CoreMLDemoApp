@@ -123,6 +123,7 @@ source image-download/bin/activate
 # install the necessary packages
 pip3 install --upgrade pip
 pip3 install tensorflow tensorflow-hub
+pip3 install coremltools
 ```
 
 ### Example retraining: practice with flowers
