@@ -122,8 +122,9 @@ source image-download/bin/activate
 
 # install the necessary packages
 pip3 install --upgrade pip
+pip3 install setuptools>=41.0.0
 pip3 install tensorflow tensorflow-hub
-pip3 install coremltools
+pip3 install coremltools==3.0b5 tfcoreml==0.4.0b1  # betas required for CoreML3
 ```
 
 ### Example retraining: practice with flowers
@@ -200,18 +201,36 @@ source image-download/bin/activate
 Retrain ImageNet.
 
 ```bash
-python retrain.py --image_dir ./flower_photos
+python3 imageClassifierModel/retrain.py \
+  --image_dir=/n/scratch2/jc604_plantimages \
+  --output_graph=imageClassifierModel/tf_succulent_classifier.pb \
+  --output_labels=imageClassifierModel/tf_output_labels.txt \
+  --summaries_dir=imageClassifierModel/tf_summaries \
+  --output_layer=plant_classifier \
+  --random_brightness=5
 ```
 
 Test on some images.
 
 ```bash
 python label_image.py \
-    --graph=/tmp/output_graph.pb \
-    --labels=/tmp/output_labels.txt \
+    --graph=imageClassifierModel/tf_succulent_classifier.pb \
+    --labels=imageClassifierModel/tf_output_labels.txt \
     --input_layer=Placeholder \
-    --output_layer=final_result \
-    --image=./my_plant_images/Euphorbia obesa_5.JPG
+    --output_layer=plant_classifier \
+    --image=imageClassifierModel/my_plant_images/Euphorbia obesa_5.JPG
+```
+
+Convert to CoreML format. (**untested**)
+
+```python
+import tfcoreml as tf_converter
+
+tf_converter.convert(tf_model_path='my_model.pb',
+                     mlmodel_path='my_model.mlmodel',
+                     output_feature_names=['softmax'],
+                     input_name_shape_dict={'input': [1, 227, 227, 3]},
+                     use_coreml_3=True)
 ```
 
 ---
@@ -234,3 +253,8 @@ python label_image.py \
 
 * [Google Images Download](https://github.com/hardikvasa/google-images-download) python library (can `pip` install)
 * [googliser](https://github.com/teracow/googliser)
+
+## For CoreML3
+
+* [Integrating a Core ML Model into Your App](https://developer.apple.com/documentation/coreml/integrating_a_core_ml_model_into_your_app)
+* 
